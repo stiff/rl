@@ -155,8 +155,7 @@ where
     DEC: Decay,
     // O: Optimizer<M, B>,
     Vec<E::State>: ToTensor<B, D, Float>,
-    Vec<E::Action>: ToTensor<B, 2, Int>,
-    E::Action: From<usize>,
+    E::Action: From<i32> + Into<[i32; 1]>,
 {
     /// Initialize a new `DQNAgent`
     ///
@@ -210,7 +209,7 @@ where
                     .forward(input)
                     .argmax(1)
                     .into_scalar();
-                E::Action::from(output.try_into().unwrap())
+                E::Action::from(output)
             }
         }
     }
@@ -237,7 +236,12 @@ where
 
         // Tensor conversions
         let states = batch.states.to_tensor(self.device);
-        let actions = batch.actions.to_tensor(self.device);
+        let actions = batch
+            .actions
+            .into_iter()
+            .map(|a| a.into())
+            .collect::<Vec<_>>()
+            .to_tensor(self.device);
         let next_states = batch
             .next_states
             .into_iter()
@@ -296,7 +300,12 @@ where
 
         // Tensor conversions
         let states = batch.states.to_tensor(self.device);
-        let actions = batch.actions.to_tensor(self.device);
+        let actions = batch
+            .actions
+            .into_iter()
+            .map(|a| a.into())
+            .collect::<Vec<_>>()
+            .to_tensor(self.device);
         let next_states = batch
             .next_states
             .into_iter()

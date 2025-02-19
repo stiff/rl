@@ -62,7 +62,7 @@ where
     fn to_tensor(self, device: &B::Device) -> Tensor<B, 2, K> {
         let len = self.len();
         let data = Data::new(
-            self.into_iter().flatten().collect::<Vec<_>>(),
+            self.into_iter().flatten().collect(),
             [len * A].into(),
         );
         Tensor::from_data(data, device).reshape([-1, A as i32])

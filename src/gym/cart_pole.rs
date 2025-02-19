@@ -31,16 +31,12 @@ impl From<usize> for CPAction {
     }
 }
 
-impl<B: Backend<IntElem = i32>> ToTensor<B, 2, Int> for Vec<CPAction> {
-    fn to_tensor(self, device: &B::Device) -> Tensor<B, 2, Int> {
-        let len = self.len();
-        let data = Data::new(
-            self.into_iter().map(|x| x as i32).collect::<Vec<_>>(),
-            [len].into(),
-        );
-        Tensor::from_data(data, device).unsqueeze_dim(1)
+impl From<CPAction> for i32 {
+    fn from(value: CPAction) -> Self {
+        value as i32
     }
 }
+
 
 /// The classic CartPole reinforcement learning environment
 ///
